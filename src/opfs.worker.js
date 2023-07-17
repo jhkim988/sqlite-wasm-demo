@@ -51,9 +51,7 @@ const read = async () => {
   for (let i = 0; i < buffer.byteLength; i++) {
     message += String.fromCharCode(buffer.getUint8(i));
   }
-  console.log(message);
   postMessage({ type: "read", message });
-
   accessHandle.flush();
   accessHandle.close();
 };
