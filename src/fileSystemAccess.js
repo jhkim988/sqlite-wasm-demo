@@ -18,7 +18,8 @@ async function getFile() {
   return file;
 }
 
-function fileSystemAPIComponent() {
+/* file Access -> img tag */
+function fileAccessToImg() {
   const btn = document.createElement("button");
   btn.innerHTML = "click";
 
@@ -35,20 +36,17 @@ function fileSystemAPIComponent() {
   return div;
 }
 
-document.body.appendChild(fileSystemAPIComponent());
+// document.body.appendChild(fileAccessToImg());
 
 /* Directory Access */
 async function directoryAccess() {
-  const dirName = "directoryToGetName";
-  const opts = { writeable: true, mode: "sandbox" };
-  const handle = await window.showDirectoryPicker(opts);
+  const dirName = "node_modules";
+  const opts = { writeable: true, mode: "read" }; // mode: read/readwrite
+  const handle = await window.showDirectoryPicker(opts); // directoryHandle
   const subDir = handle.getDirectoryHandle(dirName, {
     create: true,
   });
-
-  for await (const entry of subDir.values()) {
-    console.log(entry.name);
-  }
+  return subDir
 }
 
 async function returnPathDirectories(directoryHandle) {
@@ -61,7 +59,7 @@ async function returnPathDirectories(directoryHandle) {
   const relativePaths = await directoryHandle.resolve(handle);
 
   if (relativePaths === null) {
-    // Not inside directory handle
+    console.log("Not inside directory handle");
   } else {
     for (const name of relativePaths) {
       console.log(name);
@@ -69,9 +67,20 @@ async function returnPathDirectories(directoryHandle) {
   }
 }
 
+function directoryAccessComponent() {
+  const btn = document.createElement("button");
+  btn.innerHTML = "directory access";
+  btn.onclick = async (event) => {
+    returnPathDirectories(await directoryAccess());
+  }
+  return btn;
+}
+
+document.body.appendChild(directoryAccessComponent());
+
 /* Write File */
 async function saveFile(imgBlob) {
-  const newHandle = await window.showSsaveFilePicker();
+  const newHandle = await window.showSaveFilePicker();
   const writableStream = await newHandle.createWritable();
   /**
    * write options:

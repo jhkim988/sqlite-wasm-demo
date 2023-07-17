@@ -1,3 +1,5 @@
+import "./fileSystemAccess";
+
 /* sqlite-wasm component */
 /*
 function component() {
@@ -32,6 +34,7 @@ document.body.appendChild(component());
 */
 
 /* opfs worker */
+/*
 function component() {
   const worker = new Worker(new URL("./opfs.worker.js", import.meta.url), {
     type: "module",
@@ -74,3 +77,4 @@ function component() {
   return div;
 }
 document.body.appendChild(component());
+*/
