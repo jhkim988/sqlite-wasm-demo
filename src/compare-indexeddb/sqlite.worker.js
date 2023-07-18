@@ -26,36 +26,32 @@ const hasTable = (table) => {
 const initCreateTable = () => {
   const config = {
     information:
-      "CREATE TABLE information(store text primary key, lastUpdateDateTime datetime)",
-    dgns: "CREATE TABLE dgns(dgns_cd text, stdy date, dgns_nm text, dgns_enm text, endy date, primary key(dgns_cd, stdy))",
-    prsc: "CREATE TABLE prsc(prsc_cd text, prsc_nm text, ingr_nm text, suga_apdy date, suga_endy date, primary key(prsc_cd, suga_apdy))",
+      "CREATE TABLE information(store text primary key, lastUpdateDateTime text)",
+    dgns: "CREATE TABLE dgns(dgns_cd text, stdy text, dgns_nm text, dgns_enm text, endy text, primary key(dgns_cd, stdy))",
+    prsc: "CREATE TABLE prsc(prsc_cd text, prsc_nm text, ingr_nm text, suga_apdy text, suga_endy text, primary key(prsc_cd, suga_apdy))",
   };
   for (let table in config) {
     if (!hasTable(table)) {
+      console.log("initCreateTable", table, config[table]);
       db.exec(config[table]);
     }
   }
 };
 
 const save = async () => {
-  console.log(
-    data.information
-      .map((obj) => `(${obj.store}, ${obj.lastUpdateDateTime})`)
-      .join(",")
-  );
   const mutation = {
     information: `insert into information (store, lastUpdateDateTime) values ${data.information
-      .map((obj) => `(${obj.store}, ${obj.lastUpdateDateTime})`)
+      .map((obj) => `('${obj.store}', '${obj.lastUpdateDateTime}')`)
       .join(",")}`,
     dgns: `insert into dgns (dgns_cd, stdy, dgns_nm, dgns_enm, endy) values ${data.dgns
       .map(
         (obj) =>
-          `(${obj.dgns_cd}, ${obj.stdy}, ${obj.dgns_nm}, ${obj.dgns_enm}, ${obj.endy})`
+          `('${obj.dgns_cd}', '${obj.stdy}', '${obj.dgns_nm}', '${obj.dgns_enm}', '${obj.endy}')`
       )
       .join(",")}`,
     prsc: `insert into prsc (prsc_cd, suga_apdy, prsc_nm, ingr_nm, suga_endy) values ${data.prsc.map(
       (obj) =>
-        `(${obj.prsc_cd}, ${obj.suga_apdy}, ${obj.prsc_nm}, ${obj.ingr_nm}, ${obj.suga_endy})`
+        `('${obj.prsc_cd}', '${obj.suga_apdy}', '${obj.prsc_nm}', '${obj.ingr_nm}', '${obj.suga_endy}')`
     )}`,
   };
   for (let table in mutation) {
@@ -65,7 +61,7 @@ const save = async () => {
 };
 
 /* opfs data.json -> read */
-const read = async () => {
+const read = () => {
   const query = {
     information: `select * from information`,
     dgns: `select * from dgns`,
@@ -74,6 +70,7 @@ const read = async () => {
 
   const ret = {};
   for (let table in query) {
+    console.log("query", table, query[table])
     ret[table] = db.selectObjects(query[table]);
   }
 
