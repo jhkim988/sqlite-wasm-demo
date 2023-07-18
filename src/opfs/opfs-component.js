@@ -1,4 +1,4 @@
-export function component() {
+export function Opfscomponent() {
   const worker = new Worker(new URL("./opfs.worker.js", import.meta.url), {
     type: "module",
   });

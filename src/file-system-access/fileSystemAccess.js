@@ -97,8 +97,3 @@ async function saveFile(imgBlob, opts) {
   await writableStream.write(imgBlob);
   await writableStream.close();
 }
-
-export function saveFileComponent() {
-  const div = document.createElement("div");
-  return div;
-}

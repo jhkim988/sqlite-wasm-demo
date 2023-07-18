@@ -47,10 +47,15 @@ const read = async () => {
   const buffer = new DataView(new ArrayBuffer(fileSize));
   const readBuffer = accessHandle.read(buffer, { at: 0 });
 
+  /* 
   let message = "";
   for (let i = 0; i < buffer.byteLength; i++) {
     message += String.fromCharCode(buffer.getUint8(i));
   }
+  */
+  /* Use TextDecoder */
+  const decoder = new TextDecoder("utf-8");
+  const message = decoder.decode(buffer.buffer);
   postMessage({ type: "read", message });
   accessHandle.flush();
   accessHandle.close();
