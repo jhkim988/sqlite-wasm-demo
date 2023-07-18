@@ -18,25 +18,31 @@ async function getFile() {
   return file;
 }
 
-/* file Access -> img tag */
-function fileAccessToImg() {
-  const btn = document.createElement("button");
-  btn.innerHTML = "click";
-
+/* file Access -> img tag -> save */
+export function fileAccessToImgComponent() {
   const div = document.createElement("div");
-  div.appendChild(btn);
 
-  btn.onclick = async (event) => {
+  const upload = document.createElement("button");
+  upload.innerHTML = "upload";
+
+  div.appendChild(upload);
+  upload.onclick = async (event) => {
     const file = await getFile();
     const img = document.createElement("img");
     img.src = URL.createObjectURL(file);
     div.appendChild(img);
+
+    const ext = file.name.slice(file.name.lastIndexOf(".") + 1);
+    /* image click -> save */
+    img.onclick = async (event) => {
+      saveFile(file, { suggestedName: `무제.${ext}` });
+    };
   };
 
   return div;
 }
 
-// document.body.appendChild(fileAccessToImg());
+// document.body.appendChild(fileAccessToImgComponent());
 
 /* Directory Access */
 async function directoryAccess() {
@@ -46,7 +52,7 @@ async function directoryAccess() {
   const subDir = handle.getDirectoryHandle(dirName, {
     create: true,
   });
-  return subDir
+  return subDir;
 }
 
 async function returnPathDirectories(directoryHandle) {
@@ -67,20 +73,20 @@ async function returnPathDirectories(directoryHandle) {
   }
 }
 
-function directoryAccessComponent() {
+export function directoryAccessComponent() {
   const btn = document.createElement("button");
   btn.innerHTML = "directory access";
   btn.onclick = async (event) => {
     returnPathDirectories(await directoryAccess());
-  }
+  };
   return btn;
 }
 
-document.body.appendChild(directoryAccessComponent());
+// document.body.appendChild(directoryAccessComponent());
 
 /* Write File */
-async function saveFile(imgBlob) {
-  const newHandle = await window.showSaveFilePicker();
+async function saveFile(imgBlob, opts) {
+  const newHandle = await window.showSaveFilePicker(opts);
   const writableStream = await newHandle.createWritable();
   /**
    * write options:
@@ -90,4 +96,9 @@ async function saveFile(imgBlob) {
    */
   await writableStream.write(imgBlob);
   await writableStream.close();
+}
+
+export function saveFileComponent() {
+  const div = document.createElement("div");
+  return div;
 }
