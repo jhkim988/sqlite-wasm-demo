@@ -11,6 +11,8 @@ const init = () => {
         initCreateTable();
       } catch (err) {
         console.error(err.name, err.message);
+      } finally {
+        console.log("init run");
       }
     }
   );
@@ -26,9 +28,9 @@ const hasTable = (table) => {
 const initCreateTable = () => {
   const config = {
     information:
-      "CREATE TABLE information(store text primary key, lastUpdateDateTime text)",
-    dgns: "CREATE TABLE dgns(dgns_cd text, stdy text, dgns_nm text, dgns_enm text, endy text, primary key(dgns_cd, stdy))",
-    prsc: "CREATE TABLE prsc(prsc_cd text, prsc_nm text, ingr_nm text, suga_apdy text, suga_endy text, primary key(prsc_cd, suga_apdy))",
+      "CREATE TABLE information(store text primary key, lastUpdateDateTime text);",
+    dgns: "CREATE TABLE dgns(dgns_cd text, stdy text, dgns_nm text, dgns_enm text, endy text, primary key(dgns_cd, stdy));",
+    prsc: "CREATE TABLE prsc(prsc_cd text, prsc_nm text, ingr_nm text, suga_apdy text, suga_endy text, primary key(prsc_cd, suga_apdy));",
   };
   for (let table in config) {
     if (!hasTable(table)) {
@@ -41,18 +43,40 @@ const initCreateTable = () => {
 const save = async () => {
   const mutation = {
     information: `insert into information (store, lastUpdateDateTime) values ${data.information
+      .map((obj) => {
+        Object.keys(obj).forEach(
+          (k) => (obj[k] = obj[k].replaceAll("'", "''"))
+        );
+        return obj;
+      })
       .map((obj) => `('${obj.store}', '${obj.lastUpdateDateTime}')`)
-      .join(",")}`,
+      .join(",")};`,
     dgns: `insert into dgns (dgns_cd, stdy, dgns_nm, dgns_enm, endy) values ${data.dgns
+      .map((obj) => {
+        Object.keys(obj).forEach(
+          (k) => (obj[k] = obj[k].replaceAll("'", "''"))
+        );
+        return obj;
+      })
       .map(
         (obj) =>
           `('${obj.dgns_cd}', '${obj.stdy}', '${obj.dgns_nm}', '${obj.dgns_enm}', '${obj.endy}')`
       )
-      .join(",")}`,
-    prsc: `insert into prsc (prsc_cd, suga_apdy, prsc_nm, ingr_nm, suga_endy) values ${data.prsc.map(
-      (obj) =>
-        `('${obj.prsc_cd}', '${obj.suga_apdy}', '${obj.prsc_nm}', '${obj.ingr_nm}', '${obj.suga_endy}')`
-    )}`,
+      .join(",")};`,
+    prsc: `insert into prsc (prsc_cd, suga_apdy, prsc_nm, ingr_nm, suga_endy) values ${data.prsc
+      .map((obj) => {
+        Object.keys(obj).forEach(
+          (k) => (obj[k] = obj[k].replaceAll("'", "''"))
+        );
+        return obj;
+      })
+      .map(
+        (obj) =>
+          `('${obj.prsc_cd}', '${obj.suga_apdy}', '${obj.prsc_nm}', ${
+            obj.ingr_nm ? `'${obj.ingr_nm}'` : null
+          }, '${obj.suga_endy}')`
+      )
+      .join(",")};`,
   };
   for (let table in mutation) {
     console.log("mutation", table, mutation[table]);
@@ -70,7 +94,7 @@ const read = () => {
 
   const ret = {};
   for (let table in query) {
-    console.log("query", table, query[table])
+    console.log("query", table, query[table]);
     ret[table] = db.selectObjects(query[table]);
   }
 
